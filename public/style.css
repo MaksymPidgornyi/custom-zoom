@@ -1,6 +1,7 @@
 .main {
     height: 100vh;
     display: flex;
+    background-color: #242324;
 }
 
 .main__left {
@@ -96,6 +97,10 @@
 
 .leave_meeting {
     color: #EB534B;
+}
+
+.leave-text {
+    color: white;
 }
 
 .unmute, .stop {
