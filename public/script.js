@@ -103,7 +103,8 @@ const playStop = () => {
 
 const leaveMeeting = () => {
   socket.disconnect();
-  socket.leave(ROOM_ID);
+  socket.emit('close');
+  // socket.leave(ROOM_ID);
   setEmptyPage();
 }
 
