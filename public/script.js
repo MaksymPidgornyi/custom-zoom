@@ -104,7 +104,6 @@ const playStop = () => {
 const leaveMeeting = () => {
   socket.disconnect();
   socket.emit('close');
-  // socket.leave(ROOM_ID);
   setEmptyPage();
 }
 
