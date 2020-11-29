@@ -101,9 +101,14 @@ const playStop = () => {
   }
 }
 
+const handleChat = () => {
+  document.querySelector('.main__right').display = none;
+
+}
+
 const leaveMeeting = () => {
   socket.disconnect();
-  socket.emit('close');
+  // socket.emit('close');
   setEmptyPage();
 }
 
