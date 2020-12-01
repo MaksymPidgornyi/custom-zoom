@@ -8,6 +8,10 @@ const peerServer = ExpressPeerServer(server, {
 });
 const { v4: uuidV4 } = require('uuid')
 
+io.listen(4000);
+io.set("transports", ["xhr-polling"]); 
+io.set("polling duration", 10); 
+
 app.use('/peerjs', peerServer);
 
 app.set('view engine', 'ejs')
@@ -25,11 +29,18 @@ io.on('connection', socket => {
   socket.on('join-room', (roomId, userId) => {
     socket.join(roomId)
     socket.to(roomId).broadcast.emit('user-connected', userId);
-    // messages
     socket.on('message', (message) => {
-      //send message to the same room
       io.to(roomId).emit('createMessage', message)
   }); 
+
+    socket.on('share', stream => {
+      console.log('sharing');
+      socket.to(roomId).broadcast.emit('screen-share', stream)
+    })
+    socket.on('stop-share', stream => {
+      console.log('stopping sharing');
+      socket.to(roomId).broadcast.emit('stop-screen-share', stream)
+    })
 
     socket.on('disconnect', () => {
       socket.to(roomId).broadcast.emit('user-disconnected', userId)

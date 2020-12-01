@@ -1,13 +1,15 @@
 const socket = io('/')
 const videoGrid = document.getElementById('video-grid')
 const myPeer = new Peer(undefined, {
-  path: '/peerjs',
   host: '/',
-  port: '443'
+  port: '443',
+  path: '/peerjs'
 })
 let myVideoStream;
 let videoStreamArray;
 let isSharing;
+let webcamsRemovedBySharing = [];
+let myName = 'user';
 const myVideo = document.createElement('video')
 myVideo.muted = true;
 const peers = {}
@@ -38,9 +40,18 @@ navigator.mediaDevices.getUserMedia({
     }
   });
   socket.on("createMessage", message => {
-    $("ul").append(`<li class="message"><b>user</b><br/>${message}</li>`);
+    $("ul").append(`<li class="message"><b>${myName}</b><br/>${message}</li>`);
     scrollToBottom()
   })
+  
+})
+
+socket.on('screen-share', stream => {
+  console.log('Somebody is sharing the screen');
+})
+
+socket.on('stop-screen-share', stream => {
+  console.log('Somebody has stopped sharing');
 })
 
 socket.on('user-disconnected', userId => {
@@ -106,32 +117,49 @@ const playStop = () => {
   }
 }
 
-//TODO:fix it
 const shareScreen = () => {
   console.log("Sharing the screen");
   let shareBtn = document.querySelector('.fa-angle-up');
 
   if(shareBtn) {
+    startSharing();
+  } else {
+    stopSharing();
+  }
+}
 
-    const displayMediaOptions = {
-      video: {
-        cursor: "always"
-      },
+const startSharing = () => {
+  isSharing = true;
+    let webcams = videoGrid.getElementsByTagName('video')
 
-      audio: false
+    for(let i = 0; i < webcams.length; i++) {
+      webcamsRemovedBySharing.push(webcams[i].srcObject);  
     }
 
-    videoStreamArray = myVideoStream.getVideoTracks();
-    isSharing = true;
-    
-    navigator.mediaDevices.getDisplayMedia(displayMediaOptions).then(stream => videoGrid.append(stream))
-      .catch(err => { console.error("Error:" + err); return null; });
+    videoGrid.innerHTML = '';
+
+    navigator.mediaDevices.getDisplayMedia({cursor: true}).then(stream => {
+      video = document.createElement('video');
+      video.classList.add('sharing');
+      addVideoStream(video, stream);
+      console.log('emitting..')
+      socket.emit('share', stream);
+    })
     setStopSharing();
-  } else {
-    isSharing = false;
-    // videoGrid = videoStreamArray;
+}
+
+const stopSharing = () => {
+  isSharing = false;
+    let sharingBlockObject = videoGrid.getElementsByTagName('video')[0].srcObject;
+    sharingBlockObject.getTracks()[0].stop();
+    videoGrid.innerHTML = '';
+    webcamsRemovedBySharing.forEach(videoStream => {
+      let video = document.createElement('video');
+      addVideoStream(video, videoStream);
+      socket.emit('stop-share', videoStream);
+    });
+    webcamsRemovedBySharing = [];
     setStartSharing();
-  }
 }
 
 const handleChat = () => {

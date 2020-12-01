@@ -3,7 +3,7 @@
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Document</title>
+   <title>Zoom-clone Pidhornyi</title>
    <script>
       const ROOM_ID = "<%= roomId %>"
    </script>
@@ -26,6 +26,11 @@
          width: 400px;
          object-fit: cover;
          padding: 8px;
+      }
+      .sharing{
+         height: 600px;
+         width: 1100px;
+         object-fit: cover;
       }
    </style>
 </head>
@@ -53,13 +58,13 @@
                   <i class="fas fa-angle-up"></i>
                   <span>Share</span>
                </div>
-               <div class="main__controls__button">
-                  <i class="fas fa-user-friends"></i>
-                  <span>Participants</span>
-               </div>
                <div onClick="handleChat()" class="main__controls__button">
                   <i class="fas fa-comment-alt"></i>
                   <span>Chat</span>
+               </div>
+               <div class="main__controls__button">
+                  <i class="fas fa-cogs"></i>
+                  <span>More</span>
                </div>
             </div>
             <div onClick="leaveMeeting()" class="main__controls__block">
@@ -68,6 +73,16 @@
                </div>
             </div>
          </div>
+         <!-- <div class="main__config__modal">
+            <div>
+               <input type="text" id="user-nickname"/>
+               <span>Nickname</span>
+            </div>
+            <div>
+               <i class="fas"></i>
+               <span>Share audio</span>
+            </div>
+         </div> -->
       </div>
       <div class="main__right">
          <div class="main__header">
